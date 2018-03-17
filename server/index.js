@@ -1,32 +1,13 @@
 const express = require('express');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const mongoose = require('mongoose');
 const keys = require('./config/keys');
+require('./services/passport'); //since passport files deoes not return anything . just require.
+//connect to mongo
+mongoose.connect(keys.mongoURI);
+
+//create server
 const app = express();
-
-//configure passport to use Google Oauth
-passport.use(
-	new GoogleStrategy(
-		{
-			clientID: keys.googleClientID,
-			clientSecret: keys.googleClientSecret,
-			callbackURL: '/auth/google/callback',
-		},
-		accessToken => {
-			console.log(accessToken);
-		}
-	)
-);
-
-app.get(
-	'/auth/google',
-	passport.authenticate('google', {
-		scope: ['profile', 'email'],
-	})
-);
-
-//route to handle google callback url
-app.get('/auth/google/callback', passport.authenticate('google'));
+require('./routes/aouthRoutes')(app); //Require the file, then execute immediately bt passing express app object
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
