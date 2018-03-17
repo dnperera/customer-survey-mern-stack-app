@@ -1,6 +1,9 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const mongoose = require('mongoose');
 const keys = require('../config/keys');
+
+const User = mongoose.model('users');
 
 //configure passport to use Google Oauth
 passport.use(
@@ -11,10 +14,16 @@ passport.use(
 			callbackURL: '/auth/google/callback',
 		},
 		(accessToken, refreshToken, profile, done) => {
-			//once google grant acces via token . then take details of the user
-			console.log('accessToken', accessToken);
-			console.log('refresh Token', refreshToken);
-			console.log('profile', profile);
+			//First check user already registered in db
+			User.findOne({ googleId: profile.id }).then(existingUser => {
+				if (existingUser) {
+					//user already registered.
+					console.log('User is already registered ..!');
+				} else {
+					//create new user
+					new User({ googleId: profile.id }).save();
+				}
+			});
 		}
 	)
 );

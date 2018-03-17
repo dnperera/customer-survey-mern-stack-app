@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const keys = require('./config/keys');
+require('./models/User');
 require('./services/passport'); //since passport files deoes not return anything . just require.
+
 //connect to mongo
 mongoose.connect(keys.mongoURI);
 
