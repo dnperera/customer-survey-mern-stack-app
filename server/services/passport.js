@@ -5,6 +5,10 @@ const keys = require('../config/keys');
 
 const User = mongoose.model('users');
 
+passport.serializeUser((user, done) => {
+	done(null, user.id);
+});
+
 //configure passport to use Google Oauth
 passport.use(
 	new GoogleStrategy(
@@ -19,9 +23,12 @@ passport.use(
 				if (existingUser) {
 					//user already registered.
 					console.log('User is already registered ..!');
+					done(null, existingUser);
 				} else {
 					//create new user
-					new User({ googleId: profile.id }).save();
+					new User({ googleId: profile.id }).save().then(user => {
+						done(null, user);
+					});
 				}
 			});
 		}

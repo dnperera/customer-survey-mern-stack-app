@@ -9,7 +9,7 @@ mongoose.connect(keys.mongoURI);
 
 //create server
 const app = express();
-require('./routes/aouthRoutes')(app); //Require the file, then execute immediately bt passing express app object
+require('./routes/oauthRoutes')(app); //Require the file, then execute immediately bt passing express app object
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
