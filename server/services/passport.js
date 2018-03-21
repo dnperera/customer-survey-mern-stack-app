@@ -9,6 +9,11 @@ passport.serializeUser((user, done) => {
 	done(null, user.id);
 });
 
+passport.deserializeUser((id, done) => {
+	User.findById(id).then(user => {
+		done(null, user);
+	});
+});
 //configure passport to use Google Oauth
 passport.use(
 	new GoogleStrategy(
@@ -25,7 +30,7 @@ passport.use(
 					console.log('User is already registered ..!');
 					done(null, existingUser);
 				} else {
-					//create new user
+					//create new user and then inform passport , operation done by calling done
 					new User({ googleId: profile.id }).save().then(user => {
 						done(null, user);
 					});
