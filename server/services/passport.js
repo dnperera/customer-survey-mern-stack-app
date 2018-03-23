@@ -23,20 +23,18 @@ passport.use(
 			callbackURL: '/auth/google/callback',
 			proxy: true,
 		},
-		(accessToken, refreshToken, profile, done) => {
+		async (accessToken, refreshToken, profile, done) => {
 			//First check user already registered in db
-			User.findOne({ googleId: profile.id }).then(existingUser => {
-				if (existingUser) {
-					//user already registered.
-					console.log('User is already registered ..!');
-					done(null, existingUser);
-				} else {
-					//create new user and then inform passport , operation done by calling done
-					new User({ googleId: profile.id }).save().then(user => {
-						done(null, user);
-					});
-				}
-			});
+			const existingUser = await User.findOne({ googleId: profile.id });
+			if (existingUser) {
+				//user already registered.
+				console.log('User is already registered ..!');
+				done(null, existingUser);
+			} else {
+				//create new user and then inform passport , operation done by calling done
+				const user = await new User({ googleId: profile.id }).save();
+				done(null, user);
+			}
 		}
 	)
 );
